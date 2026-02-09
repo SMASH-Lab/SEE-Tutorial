@@ -21,45 +21,47 @@
  If not, see http://http://www.gnu.org/licenses/
  *****************************************************************/
 
-package org.see.roverexample.encoding;
+package org.see.tutorial.encoding;
 
-import hla.rti1516_2025.encoding.DecoderException;
-import hla.rti1516_2025.encoding.EncoderFactory;
-import hla.rti1516_2025.encoding.HLAfixedArray;
-import hla.rti1516_2025.encoding.HLAfloat64LE;
-import org.apache.commons.geometry.euclidean.threed.Vector3D;
+import hla.rti1516_2025.encoding.*;
+import org.apache.commons.numbers.quaternion.Quaternion;
 import org.see.skf.core.Coder;
 import org.see.skf.core.HLAUtilityFactory;
 
-public class Vector3DCoder implements Coder<Vector3D> {
-    private final HLAfixedArray<HLAfloat64LE> coder;
+public class QuaternionCoder implements Coder<Quaternion> {
+    private final HLAfixedRecord coder;
 
-    public Vector3DCoder() {
+    private final HLAfloat64LE scalar;
+    private final HLAfixedArray<HLAfloat64LE> vector;
+
+    public QuaternionCoder() {
         EncoderFactory encoderFactory = HLAUtilityFactory.INSTANCE.getEncoderFactory();
-        coder = encoderFactory.createHLAfixedArray(
-                encoderFactory.createHLAfloat64LE(),
-                encoderFactory.createHLAfloat64LE(),
-                encoderFactory.createHLAfloat64LE()
-        );
+        coder = encoderFactory.createHLAfixedRecord();
+
+        scalar = encoderFactory.createHLAfloat64LE();
+        vector = encoderFactory.createHLAfixedArray(encoderFactory.createHLAfloat64LE(), encoderFactory.createHLAfloat64LE(), encoderFactory.createHLAfloat64LE());
+        coder.add(scalar);
+        coder.add(vector);
     }
 
     @Override
-    public Vector3D decode(byte[] bytes) throws DecoderException {
+    public Quaternion decode(byte[] bytes) throws DecoderException {
         coder.decode(bytes);
-        return Vector3D.of(coder.get(0).getValue(), coder.get(1).getValue(), coder.get(2).getValue());
+        return Quaternion.of(scalar.getValue(), vector.get(0).getValue(), vector.get(1).getValue(), vector.get(2).getValue());
     }
 
     @Override
-    public byte[] encode(Vector3D vector) {
-        coder.get(0).setValue(vector.getX());
-        coder.get(1).setValue(vector.getY());
-        coder.get(2).setValue(vector.getZ());
+    public byte[] encode(Quaternion quaternion) {
+        scalar.setValue(quaternion.getW());
+        vector.get(0).setValue(quaternion.getX());
+        vector.get(1).setValue(quaternion.getY());
+        vector.get(2).setValue(quaternion.getZ());
 
         return coder.toByteArray();
     }
 
     @Override
-    public Class<Vector3D> getAllowedType() {
-        return Vector3D.class;
+    public Class<Quaternion> getAllowedType() {
+        return Quaternion.class;
     }
 }

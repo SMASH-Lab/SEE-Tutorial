@@ -21,15 +21,15 @@
  If not, see http://http://www.gnu.org/licenses/
  *****************************************************************/
 
-package org.see.roverexample.models;
+package org.see.tutorial.models.objects;
 
 import org.see.skf.annotations.Attribute;
 import org.see.skf.annotations.ObjectClass;
 import org.see.skf.runtime.ScopeLevel;
 import org.see.skf.util.encoding.HLAunicodeStringCoder;
 import org.see.skf.core.PropertyChangeSubject;
-import org.see.roverexample.encoding.SpaceTimeCoordinateStateCoder;
-import org.see.roverexample.types.SpaceTimeCoordinateState;
+import org.see.tutorial.encoding.SpaceTimeCoordinateStateCoder;
+import org.see.tutorial.types.SpaceTimeCoordinateState;
 
 @ObjectClass(name = "HLAobjectRoot.ReferenceFrame")
 public class ReferenceFrame extends PropertyChangeSubject {

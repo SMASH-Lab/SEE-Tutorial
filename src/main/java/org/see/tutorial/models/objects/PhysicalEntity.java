@@ -1,6 +1,6 @@
 /*****************************************************************
- SEE Tutorial - Tutorial projects demonstrating how to use the
- SEE HLA Starter Kit Framework.
+ SEE Baseplate - A starter project template for the SEE HLA
+ Starter Kit Framework.
  Copyright (c) 2026, Hridyanshu Aatreya - Modelling & Simulation
  Group (MSG) at Brunel University of London. All rights reserved.
 
@@ -21,55 +21,49 @@
  If not, see http://http://www.gnu.org/licenses/
  *****************************************************************/
 
-package org.see.roverexample.models;
+package org.see.tutorial.models.objects;
 
 import org.apache.commons.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.numbers.quaternion.Quaternion;
 import org.see.skf.annotations.Attribute;
 import org.see.skf.annotations.ObjectClass;
-import org.see.skf.runtime.ScopeLevel;
+import org.see.skf.core.PropertyChangeSubject;
 import org.see.skf.util.encoding.HLAunicodeStringCoder;
-import org.see.roverexample.encoding.QuaternionCoder;
-import org.see.roverexample.encoding.SpaceTimeCoordinateStateCoder;
-import org.see.roverexample.encoding.Vector3DCoder;
-import org.see.roverexample.types.SpaceTimeCoordinateState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.see.tutorial.encoding.QuaternionCoder;
+import org.see.tutorial.encoding.SpaceTimeCoordinateStateCoder;
+import org.see.tutorial.encoding.Vector3DCoder;
+import org.see.tutorial.types.SpaceTimeCoordinateState;
 
 @ObjectClass(name = "HLAobjectRoot.PhysicalEntity")
-public class LunarRover {
-    private static final Logger logger = LoggerFactory.getLogger(LunarRover.class);
-
-    private static final Vector3D POSITION_INCREMENT = Vector3D.of(10, 0, 0);
-
-    @Attribute(name = "name", coder = HLAunicodeStringCoder.class, scope = ScopeLevel.PUBLISH)
+public class PhysicalEntity extends PropertyChangeSubject {
+    @Attribute(name = "name", coder = HLAunicodeStringCoder.class)
     private String name;
 
-    @Attribute(name = "type", coder = HLAunicodeStringCoder.class, scope = ScopeLevel.PUBLISH)
+    @Attribute(name = "type", coder = HLAunicodeStringCoder.class)
     private String type;
 
-    @Attribute(name = "status", coder = HLAunicodeStringCoder.class, scope = ScopeLevel.PUBLISH)
+    @Attribute(name = "status", coder = HLAunicodeStringCoder.class)
     private String status;
 
-    @Attribute(name = "parent_reference_frame", coder = HLAunicodeStringCoder.class, scope = ScopeLevel.PUBLISH)
+    @Attribute(name = "parent_reference_frame", coder = HLAunicodeStringCoder.class)
     private String parentReferenceFrame;
 
-    @Attribute(name = "state",  coder = SpaceTimeCoordinateStateCoder.class, scope = ScopeLevel.PUBLISH)
+    @Attribute(name = "state", coder = SpaceTimeCoordinateStateCoder.class)
     private SpaceTimeCoordinateState state;
 
-    @Attribute(name = "acceleration", coder = Vector3DCoder.class, scope = ScopeLevel.PUBLISH)
+    @Attribute(name = "acceleration", coder = Vector3DCoder.class)
     private Vector3D acceleration;
 
-    @Attribute(name = "rotational_acceleration", coder = Vector3DCoder.class, scope = ScopeLevel.PUBLISH)
+    @Attribute(name = "rotational_acceleration", coder = Vector3DCoder.class)
     private Vector3D rotationalAcceleration;
 
-    @Attribute(name = "center_of_mass", coder = Vector3DCoder.class, scope = ScopeLevel.PUBLISH)
+    @Attribute(name = "center_of_mass", coder = Vector3DCoder.class)
     private Vector3D centerOfMass;
 
-    @Attribute(name = "body_wrt_structural", coder = QuaternionCoder.class, scope = ScopeLevel.PUBLISH)
+    @Attribute(name = "body_wrt_structural", coder = QuaternionCoder.class)
     private Quaternion bodyWrtStructural;
 
-    public LunarRover() {
+    public PhysicalEntity() {
         this.name = "";
         this.type = "";
         this.status = "";
@@ -79,23 +73,6 @@ public class LunarRover {
         this.rotationalAcceleration = Vector3D.of(0, 0, 0);
         this.centerOfMass = Vector3D.of(0, 0, 0);
         this.bodyWrtStructural = Quaternion.of(0, 0, 0, 0);
-    }
-
-    public LunarRover(String name, String type, String status, String parentReferenceFrame, Vector3D spawnPoint) {
-        this();
-
-        this.name = name;
-        this.type = type;
-        this.status = status;
-        this.parentReferenceFrame = parentReferenceFrame;
-        this.state.setPosition(spawnPoint);
-    }
-
-    public void move() {
-        Vector3D currentPosition = state.getPosition();
-        state.setPosition(currentPosition.add(POSITION_INCREMENT));
-        currentPosition = state.getPosition();
-        logger.info("Rover has moved to: {}", currentPosition);
     }
 
     public String getName() {

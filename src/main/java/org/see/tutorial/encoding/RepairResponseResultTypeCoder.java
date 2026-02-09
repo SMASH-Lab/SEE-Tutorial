@@ -21,47 +21,37 @@
  If not, see http://http://www.gnu.org/licenses/
  *****************************************************************/
 
-package org.see.roverexample.encoding;
+package org.see.tutorial.encoding;
 
-import hla.rti1516_2025.encoding.*;
-import org.apache.commons.numbers.quaternion.Quaternion;
+import hla.rti1516_2025.encoding.DecoderException;
+import hla.rti1516_2025.encoding.EncoderFactory;
+import hla.rti1516_2025.encoding.HLAinteger16BE;
 import org.see.skf.core.Coder;
 import org.see.skf.core.HLAUtilityFactory;
+import org.see.tutorial.types.RepairResponseResultType;
 
-public class QuaternionCoder implements Coder<Quaternion> {
-    private final HLAfixedRecord coder;
+public class RepairResponseResultTypeCoder implements Coder<RepairResponseResultType> {
+    private final HLAinteger16BE coder;
 
-    private final HLAfloat64LE scalar;
-    private final HLAfixedArray<HLAfloat64LE> vector;
-
-    public QuaternionCoder() {
+    public RepairResponseResultTypeCoder() {
         EncoderFactory encoderFactory = HLAUtilityFactory.INSTANCE.getEncoderFactory();
-        coder = encoderFactory.createHLAfixedRecord();
-
-        scalar = encoderFactory.createHLAfloat64LE();
-        vector = encoderFactory.createHLAfixedArray(encoderFactory.createHLAfloat64LE(), encoderFactory.createHLAfloat64LE(), encoderFactory.createHLAfloat64LE());
-        coder.add(scalar);
-        coder.add(vector);
+        this.coder = encoderFactory.createHLAinteger16BE();
     }
 
     @Override
-    public Quaternion decode(byte[] bytes) throws DecoderException {
-        coder.decode(bytes);
-        return Quaternion.of(scalar.getValue(), vector.get(0).getValue(), vector.get(1).getValue(), vector.get(2).getValue());
+    public RepairResponseResultType decode(byte[] buffer) throws DecoderException {
+        coder.decode(buffer);
+        return RepairResponseResultType.fromValue(coder.getValue());
     }
 
     @Override
-    public byte[] encode(Quaternion quaternion) {
-        scalar.setValue(quaternion.getW());
-        vector.get(0).setValue(quaternion.getX());
-        vector.get(1).setValue(quaternion.getY());
-        vector.get(2).setValue(quaternion.getZ());
-
+    public byte[] encode(RepairResponseResultType repairResponseResultType) {
+        coder.setValue(repairResponseResultType.getValue());
         return coder.toByteArray();
     }
 
     @Override
-    public Class<Quaternion> getAllowedType() {
-        return Quaternion.class;
+    public Class<RepairResponseResultType> getAllowedType() {
+        return RepairResponseResultType.class;
     }
 }

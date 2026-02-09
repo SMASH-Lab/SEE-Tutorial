@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<objectModel xsi:schemaLocation="http://standards.ieee.org/IEEE1516-2025 http://standards.ieee.org/downloads/1516/1516.2-2025/IEEE1516-DIF-2025.xsd" xmlns="http://standards.ieee.org/IEEE1516-2025" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelIdentification>
+        <name>SEE Tutorial FOM Module</name>
+        <type>FOM</type>
+        <version>1.0</version>
+        <securityClassification>unclassified</securityClassification>
+        <purpose>The Simulation Exploration Experience (SEE) Tutorial FOM is intended to serve as an example for student teams.</purpose>
+        <applicationDomain>All domains</applicationDomain>
+        <description>Adds a simple interaction class to demonstrate how it can be used in the SEE HLA Starter Kit framework.</description>
+        <useLimitation />
+        <poc>
+            <pocType>Primary author</pocType>
+            <pocName>Hridyanshu Aatreya</pocName>
+            <pocOrg>Brunel University of London</pocOrg>
+            <pocEmail>Hridyanshu.Aatreya2@brunel.ac.uk</pocEmail>
+        </poc>
+    </modelIdentification>
+    <interactions>
+        <interactionClass>
+            <name>HLAinteractionRoot</name>
+            <interactionClass>
+                <name>RepairComplete</name>
+                <sharing>PublishSubscribe</sharing>
+                <transportation>HLAbestEffort</transportation>
+                <order>Receive</order>
+                <semantics>Notifies the requesting entity that the requested repair has been completed.</semantics>
+                <parameter>
+                    <name>ReceivingObject</name>
+                    <dataType>HLAunicodeString</dataType>
+                    <semantics>Object requesting repairs.</semantics>
+                </parameter>
+                <parameter>
+                    <name>RepairingObject</name>
+                    <dataType>HLAunicodeString</dataType>
+                    <semantics>Object that is able to perform the requested repair.</semantics>
+                </parameter>
+                <parameter>
+                    <name>PartRepaired</name>
+                    <dataType>VehiclePartEnum16</dataType>
+                    <semantics>The part that was repaired.</semantics>
+                </parameter>
+            </interactionClass>
+            <interactionClass>
+                <name>RepairResponse</name>
+                <sharing>PublishSubscribe</sharing>
+                <transportation>HLAbestEffort</transportation>
+                <order>Receive</order>
+                <semantics>Acknowledges the notification of the completion of a repair .</semantics>
+                <parameter>
+                    <name>ReceivingObject</name>
+                    <dataType>HLAunicodeString</dataType>
+                    <semantics>Object requesting repairs.</semantics>
+                </parameter>
+                <parameter>
+                    <name>RepairingObject</name>
+                    <dataType>HLAunicodeString</dataType>
+                    <semantics>Object that is able to perform the requested repair.</semantics>
+                </parameter>
+                <parameter>
+                    <name>RepairResultCode</name>
+                    <dataType>RepairResponseResultEnum16</dataType>
+                    <semantics>Result of repair.</semantics>
+                </parameter>
+            </interactionClass>
+            <interactionClass>
+                <name>RepairRequest</name>
+                <sharing>PublishSubscribe</sharing>
+                <transportation>HLAbestEffort</transportation>
+                <order>Receive</order>
+                <semantics>A request for repair assistance. The requesting entity issues the interaction to the supplying entity asking for repair.</semantics>
+                <parameter>
+                    <name>ReceivingObject</name>
+                    <dataType>HLAunicodeString</dataType>
+                    <semantics>Object requesting repairs.</semantics>
+                </parameter>
+                <parameter>
+                    <name>ServicingObject</name>
+                    <dataType>HLAunicodeString</dataType>
+                    <semantics>Object that is able to perform the requested repair.</semantics>
+                </parameter>
+                <parameter>
+                    <name>RepairType</name>
+                    <dataType>VehiclePartEnum16</dataType>
+                    <semantics>Part that needs repairs.</semantics>
+                </parameter>
+            </interactionClass>
+        </interactionClass>
+    </interactions>
+    <dataTypes>
+        <simpleDataTypes/>
+        <enumeratedDataTypes>
+            <enumeratedData>
+                <name>VehiclePartEnum16</name>
+                <representation>HLAinteger16BE</representation>
+                <semantics>Enum signifying the kind of repair that is necessary.</semantics>
+                <enumerator>
+                    <name>sensors</name>
+                    <value>0</value>
+                </enumerator>
+                <enumerator>
+                    <name>battery</name>
+                    <value>1</value>
+                </enumerator>
+                <enumerator>
+                    <name>track</name>
+                    <value>2</value>
+                </enumerator>
+                <enumerator>
+                    <name>electronic_systems</name>
+                    <value>3</value>
+                </enumerator>
+                <enumerator>
+                    <name>radios</name>
+                    <value>4</value>
+                </enumerator>
+            </enumeratedData>
+            <enumeratedData>
+                <name>RepairResponseResultEnum16</name>
+                <enumerator>
+                    <name>other</name>
+                    <value>0</value>
+                </enumerator>
+                <enumerator>
+                    <name>repair_ended</name>
+                    <value>1</value>
+                </enumerator>
+                <enumerator>
+                    <name>invalid_repair</name>
+                    <value>2</value>
+                </enumerator>
+                <enumerator>
+                    <name>repair_interrupted</name>
+                    <value>3</value>
+                </enumerator>
+                <enumerator>
+                    <name>repair_canceled</name>
+                    <value>4</value>
+                </enumerator>
+            </enumeratedData>
+        </enumeratedDataTypes>
+        <arrayDataTypes/>
+        <fixedRecordDataTypes/>
+        <variantRecordDataTypes/>
+    </dataTypes>
+    <notes/>
+</objectModel>

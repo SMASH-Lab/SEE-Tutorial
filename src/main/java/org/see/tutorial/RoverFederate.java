@@ -21,14 +21,16 @@
  If not, see http://http://www.gnu.org/licenses/
  *****************************************************************/
 
-package org.see.roverexample;
+package org.see.tutorial;
 
 import hla.rti1516_2025.exceptions.*;
 import org.apache.commons.geometry.euclidean.threed.Vector3D;
-import org.see.roverexample.listeners.ReferenceFrameListener;
-import org.see.roverexample.models.LunarRover;
-import org.see.roverexample.models.ReferenceFrame;
-import org.see.roverexample.models.VehicleStatusTransmission;
+import org.see.tutorial.listeners.RepairCompleteListener;
+import org.see.tutorial.models.interactions.RepairComplete;
+import org.see.tutorial.models.interactions.RepairRequest;
+import org.see.tutorial.models.interactions.RepairResponse;
+import org.see.tutorial.models.objects.LunarRover;
+import org.see.tutorial.models.objects.PhysicalEntity;
 import org.see.skf.conf.FederateConfiguration;
 import org.see.skf.core.SEEFederateAmbassador;
 import org.see.skf.core.SEELateJoinerFederate;
@@ -36,35 +38,31 @@ import org.see.skf.core.SEELateJoinerFederate;
 import java.io.File;
 
 public class RoverFederate extends SEELateJoinerFederate {
-    private static final File confFile = new File("src/main/resources/rover_federate.conf");
+    private static final File confFile = new File("src/main/resources/conf/rover_federate.conf");
 
     private final LunarRover rover;
-    private int counter;
 
     public RoverFederate(SEEFederateAmbassador federateAmbassador, FederateConfiguration federateConfiguration) {
         super(federateAmbassador, federateConfiguration);
 
         // Create a starting point for the rover.
         Vector3D spawnPoint = Vector3D.of(100, 500, -5590);
-        rover = new LunarRover("lunar_rover", "Transport", "Deployed", "AitkenBasinLocalFixed", spawnPoint);
-
-        counter = 0;
+        rover = new LunarRover(this, "lunar_rover", "Operational", "Transport", "AitkenBasinLocalFixed", spawnPoint);
     }
 
     @Override
-    public void declareClasses() throws FederateNotExecutionMember, AttributeNotDefined, ObjectClassNotDefined, RestoreInProgress, NameNotFound, NotConnected, RTIinternalError, InvalidObjectClassHandle, SaveInProgress, InvalidInteractionClassHandle, InteractionClassNotDefined {
+    public void declareClasses() throws FederateNotExecutionMember, AttributeNotDefined, ObjectClassNotDefined, RestoreInProgress, NameNotFound, NotConnected, RTIinternalError, InvalidObjectClassHandle, SaveInProgress, InvalidInteractionClassHandle, InteractionClassNotDefined, FederateServiceInvocationsAreBeingReportedViaMOM {
         // We are publishing the PhysicalEntity class since we're creating the lunar rover. It is an object instance
         // belonging to the PhysicalEntity object class. In a similar vein, we are also publishing the VehicleStatusTransmission
         // interaction class because we want to be able to transmit the status of our rover every few steps.
-        publishObjectClass(LunarRover.class);
-        publishInteractionClass(VehicleStatusTransmission.class);
+        publishObjectClass(PhysicalEntity.class);
+        publishInteractionClass(RepairResponse.class);
+        publishInteractionClass(RepairRequest.class);
 
-        // We want to be notified of updates pertaining to the MoonCentricInertial reference frame. It has been
-        // chosen arbitrarily just to demonstrate how updates are received.
-        subscribeObjectClass(ReferenceFrame.class);
+        // We want to be notified when the repair is performed on the rover.
+        subscribeInteractionClass(RepairComplete.class);
 
-        // Add an event listener to watch out for when a specific reference frame is discovered.
-        addRemoteObjectInstanceListener(new ReferenceFrameListener());
+        addInteractionListener(new RepairCompleteListener(rover));
     }
 
     @Override
@@ -79,23 +77,9 @@ public class RoverFederate extends SEELateJoinerFederate {
         // time step.
         rover.move();
 
-        // The rover has only moved locally in our federate. We need to dispatch updates for it so that other federates
-        // that are subscribed can learn about this.
+        // The rover's data has only changed locally in our federate. We need to dispatch updates for it so that other
+        // federates that are subscribed can learn about this.
         updateObjectInstance(rover);
-
-        // Send a transmission with the rover's current position and the number of time steps elapsed since mission start.
-        String transmissionMessage = "Mission Time Elapsed: " + counter;
-        sendTransmission(transmissionMessage);
-        ++counter;
-    }
-
-    private void sendTransmission(String message) {
-        try {
-            VehicleStatusTransmission transmission = new VehicleStatusTransmission(rover.getName(), rover.getState().getPosition(), message);
-            sendInteraction(transmission);
-        } catch (Exception e) {
-            throw new IllegalStateException("Error encountered while trying to transmit vehicle status.", e);
-        }
     }
 
     public static void main(String[] args) {
