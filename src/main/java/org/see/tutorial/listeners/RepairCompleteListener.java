@@ -42,6 +42,10 @@ public class RepairCompleteListener implements InteractionListener {
         // By registering this event listener, the rover federate can monitor for the RepairComplete interaction.
         // Once that event is received, it fires the RepairComplete interaction with the status of the repair.
         // For simplicity's sake, we assume all repair operations were completed without incident.
+
+        // N.B. the Repair Complete interaction is simply a message from the RepairFederate that it has done its job.
+        // However, the state of the lunar rover has to explicitly be updated to reflect the outcome of the repair
+        // operation. To echo HLA fundamentals, objects persist but interactions don't.
         if (interaction instanceof RepairComplete) {
             RepairComplete repairComplete = (RepairComplete) interaction;
             logger.info("Received notification of completed repairs for {}!", repairComplete.getReceivingObject());

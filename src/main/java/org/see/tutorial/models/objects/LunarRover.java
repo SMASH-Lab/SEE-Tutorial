@@ -80,11 +80,15 @@ public class LunarRover extends PhysicalEntity {
         int randSum = num1 + num2;
 
         if (randSum >= RNG_THRESHOLD) {
+            // Update the PhysicalEntity status attribute of the rover object instance to "Disrepair".
             setStatus("Disrepair");
             dispatchRepairRequest();
         }
     }
 
+    /**
+     * Send out an interaction, essentially a message, requesting repairs to be performed on the lunar rover.
+     */
     private void dispatchRepairRequest() {
         VehiclePartType damagedPart = chooseRandomPart();
         RepairRequest request = new RepairRequest(getName(), "repair_vehicle", damagedPart);
@@ -107,9 +111,11 @@ public class LunarRover extends PhysicalEntity {
     }
 
     public void repairCompleted() {
-        // Since the repair is complete, let's set the rover's status back to operational.
+        // Since the repair is complete, let's set the rover's (PhysicalEntity) status attribute back to operational.
         setStatus("Operational");
         logger.info("{} has just been repaired and is back in action!", getName());
+
+        // The federation execution must be made aware of the change in the rover's state i.e., it's been fixed.
         federate.updateObjectInstance(this);
 
         RepairResponse repairResponse = new RepairResponse(getName(), "repair_vehicle", RepairResponseResultType.REPAIR_ENDED);

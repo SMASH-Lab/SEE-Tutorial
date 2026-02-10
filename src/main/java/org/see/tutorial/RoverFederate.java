@@ -68,6 +68,7 @@ public class RoverFederate extends SEELateJoinerFederate {
     @Override
     public void declareObjectInstances() throws FederateNotExecutionMember, ObjectClassNotPublished, ObjectClassNotDefined, RestoreInProgress, ObjectInstanceNotKnown, IllegalName, ObjectInstanceNameInUse, ObjectInstanceNameNotReserved, NotConnected, RTIinternalError, SaveInProgress {
         // This creates an object instance at the RTI with the name "lunar_rover".
+        // The rover is an instance of the SpaceFOM "PhysicalEntity" object class.
         registerObjectInstance(rover, "lunar_rover");
     }
 

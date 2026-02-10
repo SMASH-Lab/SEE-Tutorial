@@ -62,7 +62,7 @@ public class RepairFederate extends SEELateJoinerFederate {
 
     @Override
     public void declareObjectInstances() {
-        // No object instances to be declared by this federate.
+        // There are no object instances to be declared: the federate's repair handling system implements that behavior.
     }
 
     @Override
