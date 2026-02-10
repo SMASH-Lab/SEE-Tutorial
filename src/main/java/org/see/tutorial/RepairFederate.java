@@ -32,21 +32,23 @@ import org.see.tutorial.models.interactions.RepairComplete;
 import org.see.tutorial.models.interactions.RepairRequest;
 import org.see.tutorial.models.interactions.RepairResponse;
 import org.see.tutorial.models.objects.PhysicalEntity;
+import org.see.tutorial.models.objects.RepairVehicle;
 
 import java.io.File;
 
 public class RepairFederate extends SEELateJoinerFederate {
     private static final File confFile = new File("src/main/resources/conf/repair_federate.conf");
-    private final RepairHandler repairHandler;
+    private final RepairVehicle repairVehicle;
 
     public RepairFederate(SEEFederateAmbassador federateAmbassador, FederateConfiguration federateConfiguration) {
         super(federateAmbassador, federateConfiguration);
-        repairHandler = new RepairHandler(this);
+        repairVehicle = new RepairVehicle(this, "repair_vehicle");
     }
 
     @Override
     public void declareClasses() throws FederateNotExecutionMember, AttributeNotDefined, ObjectClassNotDefined, RestoreInProgress, NameNotFound, NotConnected, RTIinternalError, InvalidObjectClassHandle, SaveInProgress, InvalidInteractionClassHandle, InteractionClassNotDefined, FederateServiceInvocationsAreBeingReportedViaMOM {
         // We will publish the repair complete interaction since all repairs are done by this federate.
+        publishObjectClass(PhysicalEntity.class);
         publishInteractionClass(RepairComplete.class);
 
         // The rover is a PhysicalEntity object instance, so we want to subscribe to that class.
@@ -57,18 +59,19 @@ public class RepairFederate extends SEELateJoinerFederate {
         subscribeInteractionClass(RepairResponse.class);
 
         // This event listener will listen for repair requests.
-        addInteractionListener(new RepairRequestListener(repairHandler));
+        addInteractionListener(new RepairRequestListener(repairVehicle));
     }
 
     @Override
-    public void declareObjectInstances() {
-        // There are no object instances to be declared: the federate's repair handling system implements that behavior.
+    public void declareObjectInstances() throws FederateNotExecutionMember, ObjectClassNotPublished, ObjectClassNotDefined, RestoreInProgress, ObjectInstanceNotKnown, IllegalName, ObjectInstanceNameInUse, ObjectInstanceNameNotReserved, NotConnected, RTIinternalError, SaveInProgress {
+        // The vehicle that will perform repairs on the lunar rover.
+        registerObjectInstance(repairVehicle, "repair_vehicle");
     }
 
     @Override
     public void update() {
         // Process all repair jobs per time step.
-        repairHandler.process();
+        repairVehicle.process();
     }
 
     public static void main(String[] args) {

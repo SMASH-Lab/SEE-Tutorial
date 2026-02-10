@@ -21,8 +21,10 @@
  If not, see http://http://www.gnu.org/licenses/
  *****************************************************************/
 
-package org.see.tutorial;
+package org.see.tutorial.models.objects;
 
+import org.see.skf.annotations.ObjectClass;
+import org.see.tutorial.RepairFederate;
 import org.see.tutorial.models.interactions.RepairComplete;
 import org.see.tutorial.models.interactions.RepairRequest;
 import org.slf4j.Logger;
@@ -30,8 +32,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class RepairHandler {
-    private static final Logger logger = LoggerFactory.getLogger(RepairHandler.class);
+@ObjectClass(name = "HLAobjectRoot.PhysicalEntity")
+public class RepairVehicle extends PhysicalEntity {
+    private static final Logger logger = LoggerFactory.getLogger(RepairVehicle.class);
 
     private final RepairFederate federate;
 
@@ -41,7 +44,8 @@ public class RepairHandler {
     // same time.
     private final CopyOnWriteArrayList<RepairRequest> repairRequests;
 
-    public RepairHandler(RepairFederate federate) {
+    public RepairVehicle(RepairFederate federate, String name) {
+        setName(name);
         this.federate = federate;
         repairRequests = new CopyOnWriteArrayList<>();
     }

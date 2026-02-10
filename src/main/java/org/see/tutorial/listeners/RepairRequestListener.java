@@ -24,7 +24,7 @@
 package org.see.tutorial.listeners;
 
 import org.see.skf.core.InteractionListener;
-import org.see.tutorial.RepairHandler;
+import org.see.tutorial.models.objects.RepairVehicle;
 import org.see.tutorial.models.interactions.RepairRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,15 +32,15 @@ import org.slf4j.LoggerFactory;
 public class RepairRequestListener implements InteractionListener {
     private static final Logger logger = LoggerFactory.getLogger(RepairRequestListener.class);
 
-    private final RepairHandler handler;
-    public RepairRequestListener(RepairHandler handler) {
+    private final RepairVehicle handler;
+    public RepairRequestListener(RepairVehicle handler) {
         this.handler = handler;
     }
 
     @Override
     public void received(Object interaction) {
         // The RepairFederate uses this event listener to monitor for repair requests.
-        // As soon as one comes in, it is added to the repair handler, which processes these maintenance requests
+        // As soon as one comes in, it is added to the repair vehicle, which processes these maintenance requests
         // at each time step.
         if (interaction instanceof RepairRequest) {
             RepairRequest repairRequest = (RepairRequest) interaction;
